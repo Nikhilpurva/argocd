@@ -1,0 +1,36 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: simple-app-production
+  namespace: argocd
+  annotations:
+    # 1. Enable the Image Updater for this app
+    argocd-image-updater.argoproj.io/image-list: my-app-image=my-docker-hub-user/simple-app:~1.0
+    
+    # 2. Set the update strategy (SemVer: find the latest patch of version 1.0)
+    argocd-image-updater.argoproj.io/my-app-image.update-strategy: semver
+    
+    # 3. Enable Git Write-Back (This is the magic part)
+    argocd-image-updater.argoproj.io/write-back-method: git
+    
+    # 4. (Optional) Customizing the commit
+    argocd-image-updater.argoproj.io/write-back-target: helmvalues:values.yaml
+    argocd-image-updater.argoproj.io/git-branch: main
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/Nikhilpurva/argocd.git'
+    targetRevision: HEAD
+    path: charts/simple-app # Path to your Helm chart
+    helm:
+      valueFiles:
+        - values.yaml
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: dev-env
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
