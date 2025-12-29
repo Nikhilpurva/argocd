@@ -1,7 +1,7 @@
 replicaCout: 2
 
 image:
-  repository: nginx
+  repository: nikhilpurva/nginx
   tag: "1.25.0"
   pullPolicy: IfNotPresent
 
