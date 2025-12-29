@@ -25,7 +25,7 @@ jobs:
           images: nikhilpurva/nginx
           # This creates tags based on git tags (v1.2.3) or the sha
           tags: |
-            type=semver,pattern={{version}}
+            type=raw,value=v1.0.${{ github.run_number }}
             type=sha
 
       - name: Build and Push
